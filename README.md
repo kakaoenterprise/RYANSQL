@@ -2,7 +2,7 @@
 ## Introduction
 A source code for RYANSQL, a text-to-SQL system for complex, cross-domain databases.
 
-Reference Paper: Choi et al.,[RYANSQL: Recursively Applying Sketch-based Slot Fillings for Complex Text-to-SQL in Cross-Domain Databases](https://arxiv.org/abs/2004.03125), 2020
+Reference Paper: Choi et al., [RYANSQL: Recursively Applying Sketch-based Slot Fillings for Complex Text-to-SQL in Cross-Domain Databases](https://arxiv.org/abs/2004.03125), 2020
 
 The system is submitted to [SPIDER leaderboard](https://yale-lily.github.io/spider). The system and its minor improved version RYANSQL v2 is ranked at second and fourth place (as of February 2020).
 
