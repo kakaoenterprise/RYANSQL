@@ -31,12 +31,19 @@ An example is:
 python src/trainer.py ./wwm_uncased_L-24_H-1024_A-16 ./spider
 ```
 
-The training takes about a day or 2 using a single Tesla V100 GPU. The development performance during the training shows the exact slot matching performance, including ordering; the actual performance of the final model will range between 64 to 66%, since the ordering of columns are not important in the final SQL statement.
+The training takes about a day or 2 using a single Tesla V100 GPU. The dev set performance during the training shows the exact slot matching performance, including ordering; it will range between 55 to 57 % for the final model.
 
-The required files of the SPIDER dataset are: ```tables.json```, train_spider.json, train_others.json, plus dev.json for testing. 
+The required files of the SPIDER dataset are: ```tables.json```, ```train_spider.json```, ```train_others.json```, plus ```dev.json``` for testing. 
 
 ## Evaluate 
 Run:
 
 ```
+python src/actual_test.py [BERT_DIR] [SPIDER_DATASET_DIR] [OUT_FILE]
+```
 
+to get the resultant SQL statements for the development set. The generated output file then could be evaluated using the SPIDER's evaluation script.
+
+The performance of evaluation script with the final model will range from 64 to 66 %, since the ordering of conditions is not important for an actual SQL statement. 
+
+The required files for SPIDER dataset is, ```table.json``` for database schema information, and ```dev.json``` for development dataset.
