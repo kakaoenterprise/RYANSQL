@@ -292,7 +292,6 @@ class SQLTrainer:
                 ti  = self._do_test( sess, self.vec_prop_valid, batch_size )
                 ti.print_eval_results()
                 em_f1   = ti.get_overall_result()
-                print ( "ALL F1: %.2f" % ( em_f1 * 100.0 ) )
 
                 valid_acc   = em_f1
                 if valid_acc < prev_valid_acc:
