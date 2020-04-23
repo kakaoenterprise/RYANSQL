@@ -2,9 +2,9 @@
 ## Introduction
 A source code for RYANSQL, a text-to-SQL system for complex, cross-domain databases.
 
-Reference Paper: https://arxiv.org/abs/2004.03125
+Reference Paper: Choi et al.,[RYANSQL: Recursively Applying Sketch-based Slot Fillings for Complex Text-to-SQL in Cross-Domain Databases](https://arxiv.org/abs/2004.03125), 2020
 
-The system is submitted to SPIDER leaderboard(https://yale-lily.github.io/spider). The system and its minor improved version RYANSQL v2 is ranked at second and fourth place (as of February 2020).
+The system is submitted to [SPIDER leaderboard](https://yale-lily.github.io/spider). The system and its minor improved version RYANSQL v2 is ranked at second and fourth place (as of February 2020).
 
 The system does NOT use any database records, which make it more acceptable to the real world company applications. Among the systems not using the database records, the system is ranked #1 in the leaderboard.
 
@@ -14,7 +14,7 @@ Tensorflow 1.14 <br>
 nltk
 
 ## Install 
-Download the BERT model from https://github.com/google-research/bert. You can only download the model, not the whole git. The system uses [BERT-large, uncased with Whole Word Masking model](https://storage.googleapis.com/bert_models/2019_05_30/wwm_uncased_L-24_H-1024_A-16.zip). Unzip the downloaded file.
+Download the [BERT](https://github.com/google-research/bert) pretrained model. You can only download the model, not the whole git. The system uses [BERT-large, uncased with Whole Word Masking model](https://storage.googleapis.com/bert_models/2019_05_30/wwm_uncased_L-24_H-1024_A-16.zip). Unzip the downloaded file.
  
 Download the SPIDER dataset from https://yale-lily.github.io/spider. Unzip the downloaded file.
 
