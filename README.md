@@ -14,7 +14,7 @@ Tensorflow 1.14 <br>
 nltk
 
 ## Install 
-Download the BERT model from https://github.com/google-research/bert. You can only download the model, not the whole git. The system uses [BERT-large, uncased with Whole Word Masking model] (https://storage.googleapis.com/bert_models/2019_05_30/wwm_uncased_L-24_H-1024_A-16.zip). Unzip the downloaded file.
+Download the BERT model from https://github.com/google-research/bert. You can only download the model, not the whole git. The system uses [BERT-large, uncased with Whole Word Masking model](https://storage.googleapis.com/bert_models/2019_05_30/wwm_uncased_L-24_H-1024_A-16.zip). Unzip the downloaded file.
  
 Download the SPIDER dataset from https://yale-lily.github.io/spider. Unzip the downloaded file.
 
