@@ -33,7 +33,7 @@ python src/trainer.py ./wwm_uncased_L-24_H-1024_A-16 ./spider
 
 The training takes about a day or 2 using a single Tesla V100 GPU. The development performance during the training shows the exact slot matching performance, including ordering; the actual performance of the final model will range between 64 to 66%, since the ordering of columns are not important in the final SQL statement.
 
-The required files of the SPIDER dataset are: tables.json, train_spider.json, train_others.json, plus dev.json for testing. 
+The required files of the SPIDER dataset are: ```tables.json```, train_spider.json, train_others.json, plus dev.json for testing. 
 
 ## Evaluate 
 Run:
