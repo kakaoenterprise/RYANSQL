@@ -47,3 +47,6 @@ to get the resultant SQL statements for the development set. The generated outpu
 The performance of evaluation script with the final model will range from 64 to 66 %, since the ordering of conditions is not important for an actual SQL statement. 
 
 The required files for SPIDER dataset is, ```table.json``` for database schema information, and ```dev.json``` for development dataset.
+
+## Contact
+heuristic.c@kakaoenterprise.com
