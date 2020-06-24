@@ -5,8 +5,9 @@ import math
 import random
 import ast
 import sys
-sys.path.append( "./util" )
-sys.path.append( "./util/bert" )
+sys.path.append( "../../util" )
+sys.path.append( "../../util/bert" )
+sys.path.append( "../../spider" )
 
 import modeling
 import tokenization
@@ -19,6 +20,7 @@ from timemeasurer       import TimeMeasurer
 from progbar            import Progbar
 from prop_train_manager import *
 from tok_id_ret         import *
+from evaluation         import *
 
 def copy_dict( source ):
     ret = dict()
@@ -179,16 +181,22 @@ def threading_func( tester, sess, sg, vec_data, ti ):
                 for result in vec_result_q:
                     if result[ "QID" ] == qidx:
                         vec_result_for_q.append( result )
-                    
+
                 sql_statement   = tester.generate_statement( vec_result_for_q )
                 ev_elist.append( [ sql_statement, data[ META_DB ].db_id ] )
             return '\n'.join( [ "%s\t%s" % ( v[0], v[1] ) for v in ev_elist ] )
 
 
 class SQLTester:
-    def __init__( self, bert_tokenizer = None, bert_config = None ):
+    def __init__( self, f_gold, f_db, f_table, bert_tokenizer = None, bert_config = None ):
         self._bert_tokenizer    = bert_tokenizer
         self._bert_config       = bert_config
+
+        # evaluate info.
+        self._ev_kmaps  = build_foreign_key_map_from_json( f_table )
+        with open( f_gold ) as f:
+            self._ev_glist  = [ l.strip().split('\t') for l in f.readlines() if len( l.strip() ) > 0 ]
+        self._ev_dbdir  = f_db
 
     def readCorpus( self, db_path, dev_path ):
         ds = DataStorage()
@@ -432,11 +440,17 @@ class SQLTester:
 
             if print_file:
                 print ( return_val, file = fout )
-
+            
             prog.update( batch_idx + 1 )
 
+         # Evaluate.
         if print_file:
+            em_f1   = evaluate_list( self._ev_glist, ev_elist, self._ev_dbdir, "match", self._ev_kmaps, print_file = fout )
             fout.close()
+        else:
+            em_f1   = evaluate_list( self._ev_glist, ev_elist, self._ev_dbdir, "match", self._ev_kmaps, print_diff = False )
+
+        return em_f1
 
     # Merge subselect results to get one SQL statement.
     def generate_statement( self, vec_results ):
@@ -505,7 +519,7 @@ class SQLTester:
             if target_r[ LF_ISMAX ]:
                 sql += " LIMIT 1"
             else:
-                limit_num   = target_r[ PF_QTOKS ][ target_r[ LF_POINTERLOC ] ]
+                limit_num   = target_r[ Q_BERT_TOK ][ target_r[ LF_POINTERLOC ] ]
                 map_num_str = { 0: ["zero"], 1:["one", "single", "once" ], 2:["two", "twice"], 3:["three"], 4:["four"], 5:["five"], 6:["six"], 7:["seven"], 8:["eight"], 9:["nine"], 10:["ten" ] }   
                 map_str_num = dict()
                 for k, vec in map_num_str.items():
@@ -569,7 +583,7 @@ class SQLTester:
 
         vec_cu_stats    = []
         for idx in range( condunit_num ):
-            cu_statement, next_path, join_tbl_idx_start    = self._generate_condunit( db, vec_results, tbl_name_map, next_path, join_tbl_idx_start, target_r[ PF_QTOKS ],  \
+            cu_statement, next_path, join_tbl_idx_start    = self._generate_condunit( db, vec_results, tbl_name_map, next_path, join_tbl_idx_start, target_r[ Q_BERT_TOK ],  \
                                                     target_r[ HV_CU_IS_NOT ][ idx ], target_r[ HV_CU_COND_OP ][ idx ], \
                                                     target_r[ HV_CU_VAL1_TYPE ][ idx ], target_r[ HV_CU_VAL1_SP ][ idx ], target_r[ HV_CU_VAL1_EP ][ idx ], target_r[ HV_CU_VAL1_LIKELY ][ idx ], target_r[ HV_CU_VAL1_BOOLVAL ][ idx ], \
                                                     target_r[ HV_CU_VAL2_TYPE ][ idx ], target_r[ HV_CU_VAL2_SP ][ idx ], target_r[ HV_CU_VAL2_EP ][ idx ], target_r[ HV_CU_VAL2_LIKELY ][ idx ], target_r[ HV_CU_VAL2_BOOLVAL ][ idx ], \
@@ -600,7 +614,7 @@ class SQLTester:
 
         vec_cu_stats    = []
         for idx in range( condunit_num ):
-            cu_statement, next_path, join_tbl_idx_start    = self._generate_condunit( db, vec_results, tbl_name_map, next_path, join_tbl_idx_start, target_r[ PF_QTOKS ], \
+            cu_statement, next_path, join_tbl_idx_start    = self._generate_condunit( db, vec_results, tbl_name_map, next_path, join_tbl_idx_start, target_r[ Q_BERT_TOK ], \
                                                     target_r[ WF_CU_IS_NOT ][ idx ], target_r[ WF_CU_COND_OP ][ idx ], \
                                                     target_r[ WF_CU_VAL1_TYPE ][ idx ], target_r[ WF_CU_VAL1_SP ][ idx ], target_r[ WF_CU_VAL1_EP ][ idx ], target_r[ WF_CU_VAL1_LIKELY ][ idx ], target_r[ WF_CU_VAL1_BOOLVAL ][ idx ], \
                                                     target_r[ WF_CU_VAL2_TYPE ][ idx ], target_r[ WF_CU_VAL2_SP ][ idx ], target_r[ WF_CU_VAL2_EP ][ idx ], target_r[ WF_CU_VAL2_LIKELY ][ idx ], target_r[ WF_CU_VAL2_BOOLVAL ][ idx ], \
@@ -648,9 +662,19 @@ class SQLTester:
         if t == 0:     # TEXT SPAN. 
             if ep < sp:
                 ep = sp
-            keyword = " ".join( q_toks[ sp:ep + 1 ] )
+            
+            # GEnerate keyword.
+            keyword = ""
+            for t in q_toks[ sp:ep + 1 ]:
+                if t[:2] == '##':
+                    keyword += t[2:]
+                else:
+                    keyword += " " + t
+            keyword = keyword.strip()            
+
             if len( keyword ) > 0 and keyword[0] == "'":
                 keyword = keyword[1:]
+
 
             if likely == 1:
                 keyword = "%" + keyword
@@ -878,9 +902,12 @@ if __name__== "__main__":
     BERT_DIR        = sys.argv[1]
     input_dir       = sys.argv[2]
     out_path        = sys.argv[3] 
+
+    sys.path.append( input_dir )
+    from evaluation         import *
     bert_tokenizer  = tokenization.FullTokenizer( vocab_file = "%s/vocab.txt" % BERT_DIR, do_lower_case = True )
     bert_config     = modeling.BertConfig.from_json_file( "%s/bert_config.json" % BERT_DIR )
-    st  = SQLTester( bert_tokenizer = bert_tokenizer, bert_config = bert_config )
+    st  = SQLTester( "%s/dev_gold.sql" % input_dir, "%s/database" % input_dir, "%s/tables.json" % input_dir, bert_tokenizer = bert_tokenizer, bert_config = bert_config )
     st.readCorpus( "%s/tables.json" % input_dir, "%s/dev.json" % input_dir )
 
     st.test( "checkpoint", 1, out_path )

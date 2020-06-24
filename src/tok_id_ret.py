@@ -141,11 +141,17 @@ def get_char_ids( vec_prop_f, dic ):
 # Q_BERT_TOK: Q.
 # C_BERT_TOK: T X C.
 def get_bert_tokens( vec_prop_f, bert_tokenizer ):
+    vec_Q_pointers      = [ LF_POINTERLOC, WF_CU_VAL1_SP, WF_CU_VAL2_SP, HV_CU_VAL1_SP, HV_CU_VAL2_SP ]
+    vec_Q_pointers_E    = [ WF_CU_VAL1_EP, WF_CU_VAL2_EP, HV_CU_VAL1_EP, HV_CU_VAL2_EP ]
     for vec_f in vec_prop_f:
+        map_glove_bert_idx  = dict()
+        q_bert_loc          = 0
         vec_f[ Q_BERT_TOK ] = []
-        for t in vec_f[ PF_QTOKS ]:
+        for tidx, t in enumerate( vec_f[ PF_QTOKS ] ):
             t_tokens    = bert_tokenizer.tokenize( t )
-            vec_f[ Q_BERT_TOK ] += t_tokens
+            vec_f[ Q_BERT_TOK ]         += t_tokens
+            map_glove_bert_idx[ tidx ]  = q_bert_loc 
+            q_bert_loc                  += len( t_tokens )
 
         vec_f[ C_BERT_TOK ] = []    # T X C X col_tokens.
         for vec_tbl in vec_f[ PF_TCOLTOKS ]:
@@ -156,4 +162,15 @@ def get_bert_tokens( vec_prop_f, bert_tokenizer ):
                     vec_c_bert  += bert_tokenizer.tokenize( ct )
                 vec_tbl_bert.append( vec_c_bert )
             vec_f[ C_BERT_TOK ].append( vec_tbl_bert )
+        
+        # Do Location Mapping.
+        if LF_POINTERLOC in vec_f:
+            vec_f[ LF_POINTERLOC ]  = [ vec_f[ LF_POINTERLOC ] ]
+            for pointer_prop in vec_Q_pointers:
+                vec_f[ pointer_prop ]   = [ map_glove_bert_idx[ v ] for v in vec_f[ pointer_prop ] ]       
+            vec_f[ LF_POINTERLOC ]  = vec_f[ LF_POINTERLOC ][0]
+            for pointer_prop in vec_Q_pointers_E:
+                vec_f[ pointer_prop ]   = [ map_glove_bert_idx[ v + 1 ] - 1 if v + 1 in map_glove_bert_idx else len( vec_f[ Q_BERT_TOK ] ) - 1 for v in vec_f[ pointer_prop ] ]
+
+
 
