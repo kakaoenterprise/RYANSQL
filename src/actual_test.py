@@ -5,9 +5,8 @@ import math
 import random
 import ast
 import sys
-sys.path.append( "../../util" )
-sys.path.append( "../../util/bert" )
-sys.path.append( "../../spider" )
+sys.path.append( "./util" )
+sys.path.append( "./util/bert" )
 
 import modeling
 import tokenization
@@ -20,7 +19,6 @@ from timemeasurer       import TimeMeasurer
 from progbar            import Progbar
 from prop_train_manager import *
 from tok_id_ret         import *
-from evaluation         import *
 
 def copy_dict( source ):
     ret = dict()
@@ -896,12 +894,13 @@ class SQLTester:
 
 if __name__== "__main__":
     if len( sys.argv ) < 4:
-        print ( "Usage: python actual_test.py [BERT_CONFIG_DIR] [INPUT_DIR] [OUTPUT_FN]" )
+        print ( "Usage: python actual_test.py [MODEL_PATH] [BERT_CONFIG_DIR] [INPUT_DIR] [OUTPUT_FN]" )
         sys.exit(0)
 
-    BERT_DIR        = sys.argv[1]
-    input_dir       = sys.argv[2]
-    out_path        = sys.argv[3] 
+    model_path      = sys.argv[1]
+    BERT_DIR        = sys.argv[2]
+    input_dir       = sys.argv[3]
+    out_path        = sys.argv[4] 
 
     sys.path.append( input_dir )
     from evaluation         import *
@@ -910,7 +909,7 @@ if __name__== "__main__":
     st  = SQLTester( "%s/dev_gold.sql" % input_dir, "%s/database" % input_dir, "%s/tables.json" % input_dir, bert_tokenizer = bert_tokenizer, bert_config = bert_config )
     st.readCorpus( "%s/tables.json" % input_dir, "%s/dev.json" % input_dir )
 
-    st.test( "checkpoint", 1, out_path )
+    st.test( model_path, 1, out_path )
 
 
 

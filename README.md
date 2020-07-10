@@ -39,7 +39,7 @@ The required files of the SPIDER dataset are: ```tables.json```, ```train_spider
 Run:
 
 ```
-python src/actual_test.py [BERT_DIR] [SPIDER_DATASET_DIR] [OUT_FILE]
+python src/actual_test.py [MODEL_PATH] [BERT_DIR] [SPIDER_DATASET_DIR] [OUT_FILE]
 ```
 
 to get the resultant SQL statements for the development set. The generated output file then could be evaluated using the SPIDER's evaluation script.

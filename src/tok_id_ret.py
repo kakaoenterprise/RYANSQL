@@ -173,4 +173,3 @@ def get_bert_tokens( vec_prop_f, bert_tokenizer ):
                 vec_f[ pointer_prop ]   = [ map_glove_bert_idx[ v + 1 ] - 1 if v + 1 in map_glove_bert_idx else len( vec_f[ Q_BERT_TOK ] ) - 1 for v in vec_f[ pointer_prop ] ]
 
 
-
