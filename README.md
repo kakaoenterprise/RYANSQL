@@ -6,7 +6,7 @@ Reference Paper: Choi et al., [RYANSQL: Recursively Applying Sketch-based Slot F
 
 The system is submitted to [SPIDER leaderboard](https://yale-lily.github.io/spider). The system and its minor improved version RYANSQL v2 is ranked at second and fourth place (as of February 2020).
 
-The system does NOT use any database records, which make it more acceptable to the real world company applications. Among the systems not using the database records, the system is ranked #1 in the leaderboard.
+The system does NOT use any database records, which make it more acceptable to the real world company applications. 
 
 ## Requirements
 Python3 <br>
