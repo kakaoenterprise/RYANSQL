@@ -31,7 +31,7 @@ An example is:
 python src/trainer.py ./wwm_uncased_L-24_H-1024_A-16 ./spider
 ```
 
-The training takes about a day or 2 using a single Tesla V100 GPU. The dev set performance during the training shows the exact slot matching performance, including ordering; it will range between 55 to 57 % for the final model.
+The training takes about a day using a single Tesla V100 GPU. The dev set performance during the training shows the exact slot matching performance, including ordering; it will range between 55 to 57 % for the final model.
 
 The required files of the SPIDER dataset are: ```tables.json```, ```train_spider.json```, ```train_others.json```, plus ```dev.json``` for testing. 
 
