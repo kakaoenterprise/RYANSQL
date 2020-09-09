@@ -16,7 +16,6 @@ from db_meta            import *
 from sqlgen             import SQLGen
 from testinfo_obj       import TestInfo
 from timemeasurer       import TimeMeasurer
-from progbar            import Progbar
 from prop_train_manager import *
 from tok_id_ret         import *
 
@@ -417,7 +416,6 @@ class SQLTester:
             fout    = open( out_fn, "w" )
 
         pool    = ThreadPool( processes = 1 )
-        prog        = Progbar( target = batch_num )
         for batch_idx in range( batch_num ):
             vec_data        = target_data[ batch_idx * batch_size: min( ( batch_idx + 1 ) * batch_size, len( target_data ) ) ]
             async_result    = pool.apply_async( threading_func, ( self, sess, sg, vec_data, ti ) )
@@ -439,8 +437,6 @@ class SQLTester:
             if print_file:
                 print ( return_val, file = fout )
             
-            prog.update( batch_idx + 1 )
-
          # Evaluate.
         if print_file:
             em_f1   = evaluate_list( self._ev_glist, ev_elist, self._ev_dbdir, "match", self._ev_kmaps, print_file = fout )

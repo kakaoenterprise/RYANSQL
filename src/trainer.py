@@ -18,7 +18,6 @@ from db_meta            import *
 from sqlgen             import SQLGen
 from testinfo_obj       import TestInfo
 from timemeasurer       import TimeMeasurer
-from progbar            import Progbar
 from prop_train_manager import *
 from actual_test        import *
 from tok_id_ret         import *
@@ -26,7 +25,6 @@ from tok_id_ret         import *
 class SQLTrainer:
     def __init__( self, bert_tokenizer = None, bert_config = None ):
         self.ds = DataStorage()
-        self.st = SQLTester( bert_tokenizer = bert_tokenizer, bert_config = bert_config )
         self._bert_tokenizer    = bert_tokenizer
         self._bert_config       = bert_config
 
@@ -127,7 +125,6 @@ class SQLTrainer:
         add_prop_test_info( ti, self.sg )
         add_tbl_test_info( ti, self.sg )
 
-        prog        = Progbar( target = batch_num )
         for batch_idx in range( batch_num ):
             vec_data                        = target_data[ batch_idx * batch_size: min( ( batch_idx + 1 ) * batch_size, len( target_data ) ) ]
 
@@ -204,7 +201,6 @@ class SQLTrainer:
                 total_results[k]    = v
             
             ti.integrate_eval_result( total_results, vec_data )
-            prog.update( batch_idx + 1 )
 
         return ti
 
@@ -249,7 +245,6 @@ class SQLTrainer:
                 tm  = TimeMeasurer()
                 tm.start( "train" )
 
-                prog    = Progbar( target = batch_num )
                 for batch_idx in range( batch_num ):
                     global_step += 1
                     vec_prop_data   = self.vec_prop_train[ batch_idx * batch_size: min( ( batch_idx + 1 ) * batch_size, len( self.vec_prop_train ) ) ]
@@ -281,7 +276,9 @@ class SQLTrainer:
                         print ( "PROP NAN/INF ERROR" )
                         sys.exit( 0 )
 
-                    prog.update( batch_idx + 1, [ ( "train loss", loss_val ) ] )
+                    if batch_idx % 100 == 0:
+                        print ( "%d, Train Loss: %f" % ( batch_idx, loss_val ) )
+                print ( "%d, Train Loss: %f" % ( batch_idx, loss_val ) )
 
                 average_train_loss /= len( self.vec_prop_train )
                 tm.end( "train" )
