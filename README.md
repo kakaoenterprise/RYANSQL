@@ -49,4 +49,4 @@ The performance of evaluation script with the final model will range from 64 to 
 The required files for SPIDER dataset is, ```table.json``` for database schema information, and ```dev.json``` for development dataset.
 
 ## Contact
-heuristic.c@kakaoenterprise.com
+nlp.en@kakaoenterprise.com 
