@@ -264,7 +264,7 @@ class SQLGen:
                     tbl_self_att    = tf.nn.softmax( tbl_scores, -1 )
                     updated_context = tf.matmul( tbl_self_att, db_tbl_embed )   # BS X 1 X D.
                     
-                    self.tbl_num_r, self.tbl_num_s  = self._prop_class_net( tf.concat( [ q_db_embed, db_as_whole, tf.squeeze( updated_context, 1 ) ], -1 ), 6, "TBL_NUM", keep_prob, regularizer )
+                    self.tbl_num_r, self.tbl_num_s  = self._prop_class_net( tf.concat( [ q_db_embed, db_as_whole, tf.squeeze( updated_context, 1 ) ], -1 ), 7, "TBL_NUM", keep_prob, regularizer )
 
                     prop_table_loss = 0.0
                     prop_table_loss     += tf.reduce_mean( tf.nn.sparse_softmax_cross_entropy_with_logits( logits = self.tbl_num_s, labels = self.c_tbl_num ) )
