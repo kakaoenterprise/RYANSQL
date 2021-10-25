@@ -36,6 +36,8 @@ The training takes about a day using a single Tesla V100 GPU. The dev set perfor
 The required files of the SPIDER dataset are: ```tables.json```, ```train_spider.json```, ```train_others.json```, plus ```dev.json``` for testing. 
 
 ## Evaluate 
+Clone the Spider git (https://github.com/taoyds/spider), and add its local directory to python sys.path.
+
 Run:
 
 ```
